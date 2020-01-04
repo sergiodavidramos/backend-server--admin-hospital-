@@ -32,14 +32,14 @@ app.get('/coleccion/:tabla/:busqueda', (req, res) => {
 				mensaje: 'Los tipos de busqueda solo son: usuario, medico, hspitales',
 				error: { message: 'Tipo de tabla/coleccion no valido' },
 			});
-    }
-    
-    promesa.then(data=>{
-        res.status(200).json({
-            ok: true,
-            [tabla]: data
-        });
-    })
+	}
+
+	promesa.then(data => {
+		res.status(200).json({
+			ok: true,
+			[tabla]: data,
+		});
+	});
 
 	// if (tabla === 'medico') {
 	// 	buscarMedicos(busqueda, regex).then(medicos => {
@@ -91,7 +91,7 @@ app.get('/todo/:busqueda', (req, res, next) => {
 
 function buscarHospitales(busqueda, regex) {
 	return new Promise((resolve, reject) => {
-		Hospital.find({ nombre: regex }).populate('usuario', 'nombre email').exec((err, hospitales) => {
+		Hospital.find({ nombre: regex }).populate('usuario', 'nombre email img').exec((err, hospitales) => {
 			if (err) {
 				reject('Error al cargar Hospitales', err);
 			} else {
@@ -103,19 +103,22 @@ function buscarHospitales(busqueda, regex) {
 
 function buscarMedicos(busqueda, regex) {
 	return new Promise((resolve, reject) => {
-		Medico.find({ nombre: regex }).populate('usuario', 'nombre email').populate('hospital').exec((err, medicos) => {
-			if (err) {
-				reject('Error al cargar medicos', err);
-			} else {
-				resolve(medicos);
-			}
-		});
+		Medico.find({ nombre: regex })
+			.populate('usuario', 'nombre email img')
+			.populate('hospital')
+			.exec((err, medicos) => {
+				if (err) {
+					reject('Error al cargar medicos', err);
+				} else {
+					resolve(medicos);
+				}
+			});
 	});
 }
 
 function buscarUsuario(busqueda, regex) {
 	return new Promise((resolve, reject) => {
-		Usuario.find({}, 'nombre email role').or([{ nombre: regex }, { email: regex }]).exec((err, usuarios) => {
+		Usuario.find({}, 'nombre email role img').or([{ nombre: regex }, { email: regex }]).exec((err, usuarios) => {
 			if (err) {
 				reject('Error al cargar usuarios');
 			} else {

@@ -116,7 +116,7 @@ function subirPorTipo( tipo, id, nombreArchivo, res){
         });
     }
 
-    if(tipo === '   '){
+    if(tipo === 'medicos'){
         Medico.findById(id, (err, medico)=>{
           
             if(!medico){
@@ -127,21 +127,26 @@ function subirPorTipo( tipo, id, nombreArchivo, res){
                 }); 
             }
 
-            var pathViejo = './uploads/medicos/'+medico.img;
+             var pathViejo = './uploads/medicos/'+medico.img;
 
-            if(fs.existsSync(pathViejo)){
+            if(fs.existsSync(pathViejo) && !medico.img==""){
+                console.log("entre a revisar", pathViejo);
+                
                 fs.unlinkSync(pathViejo);
             }
 
-            medico.img = nombreArchivo;
+                medico.img = nombreArchivo;
+    
+                medico.save( (err, medicoActualizado)=>{
+                    return res.status(200).json({
+                        ok: true,
+                        mensaje: 'Imagen del medico actualizado',
+                        medico: medicoActualizado
+                    });
+                })
+            
 
-            medico.save( (err, medicoActualizado)=>{
-                return res.status(200).json({
-                    ok: true,
-                    mensaje: 'Imagen del medico actualizado',
-                    medico: medicoActualizado
-                });
-            })
+
         });
     }
 
@@ -152,10 +157,10 @@ function subirPorTipo( tipo, id, nombreArchivo, res){
                 return res.status(400).json({
                     ok: false,
                     mensaje: 'Hospital no existe',
-                    errors: {message: 'EL hospital no existe'}
+                    errors: {message: 'EL hospital no existe'}  
                 }); 
             }
-            var pathViejo = './uploads/hospitales/'+hospital.img;
+             var pathViejo = './uploads/hospitales/'+hospital.img;
 
             if(fs.existsSync(pathViejo)){
                 fs.unlinkSync(pathViejo);
@@ -167,7 +172,7 @@ function subirPorTipo( tipo, id, nombreArchivo, res){
                 return res.status(200).json({
                     ok: true,
                     mensaje: 'Imagen del hospital actualizado',
-                    medico: hospitalActualizado
+                    hospital: hospitalActualizado
                 });
             })
         });
